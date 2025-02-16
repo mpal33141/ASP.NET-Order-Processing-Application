@@ -1,0 +1,24 @@
+﻿@{
+    ViewBag.Title = "Order Entry";
+}
+<h2 style="text-align: center; color: #007bff;">Enter Order Details</h2>
+<div style="max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+    <form method="post" action="/Order/ProcessOrder">
+        <label>Customer Name:</label>
+        <input type="text" name="customerName" required class="form-control" />
+        <br />
+        <label>Email:</label>
+        <input type="email" name="email" required class="form-control" />
+        <br />
+        <label>Order Amount:</label>
+        <input type="number" name="orderAmount" required class="form-control" />
+        <br />
+        <label>Customer Type:</label>
+        <select name="customerType" class="form-control">
+            <option value="New">New</option>
+            <option value="Loyal">Loyal</option>
+        </select>
+        <br />
+        <button type="submit" class="btn btn-primary btn-block">Submit</button>
+    </form>
+</div>

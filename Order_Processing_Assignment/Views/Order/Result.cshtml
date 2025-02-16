@@ -1,0 +1,12 @@
+﻿@{
+    ViewBag.Title = "Order Result";
+}
+<h2 style="text-align: center; color: #28a745;">Order Summary</h2>
+<div style="max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+    <p><strong>Customer Name:</strong> @ViewBag.CustomerName</p>
+    <p><strong>Email:</strong> @ViewBag.Email</p>
+    <p><strong>Order Amount:</strong> $@ViewBag.OrderAmount</p>
+    <p><strong>Customer Type:</strong> @ViewBag.CustomerType</p>
+    <p><strong>Discount:</strong> $@ViewBag.Discount</p>
+    <p><strong>Final Total:</strong> $@ViewBag.FinalTotal</p>
+</div>
