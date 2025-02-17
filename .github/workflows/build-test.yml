@@ -38,12 +38,13 @@ jobs:
 
       # Build Project using MSBuild
       - name: Build Project
-        run: msbuild /p:Configuration=Release Order_Processing_Assignment.sln
+        run: |
+          "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin\MSBuild.exe" /p:Configuration=Release Order_Processing_Assignment.sln
 
       # Run Tests using VSTest.console.exe
       - name: Run Tests
         run: |
           $testAssemblies = Get-ChildItem -Recurse -Filter *Test*.dll -Path '.\bin\Release'
           foreach ($testAssembly in $testAssemblies) {
-            vstest.console.exe $testAssembly.FullName
+            "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\Common7\IDE\Extensions\TestPlatform\vstest.console.exe" $testAssembly.FullName
           }
