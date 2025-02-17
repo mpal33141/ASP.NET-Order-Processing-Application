@@ -21,7 +21,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Install Visual Studio Build Tools (2019) with .NET Framework 4.8.1 support
+      # Install Visual Studio Build Tools 2019 with Web Development
       - name: Install Visual Studio Build Tools
         run: |
           choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.ManagedDesktop --add Microsoft.VisualStudio.Workload.WebDevelopment --add Microsoft.VisualStudio.Component.Windows10SDK.18362 --includeRecommended"
