@@ -17,6 +17,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Enable Long Path Support
+      run: |
+        Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
       with:
