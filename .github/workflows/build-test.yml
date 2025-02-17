@@ -29,6 +29,12 @@ jobs:
       with:
         vs-version: 'latest'
 
+    - name: Move the repo to a shorter path
+      run: |
+        mkdir C:\Build
+        move ${{ github.workspace }} C:\Build\Order_Processing_Assignment
+        cd C:\Build\Order_Processing_Assignment
+
     - name: Restore NuGet packages
       run: |
         nuget restore Order_Processing_Assignment.sln
