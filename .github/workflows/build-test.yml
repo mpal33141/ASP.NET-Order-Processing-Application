@@ -1,7 +1,4 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
-name: .NET
+name: Build and Test ASP.NET MVC 4.8.1 Project
 
 on:
   push:
@@ -11,18 +8,28 @@ on:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up .NET Framework
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 4.8.1
+
     - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: nuget restore ./Order_Processing_Assignment.sln
+
+    - name: Build the project
+      run: msbuild ./Order_Processing_Assignment.sln /p:Configuration=Release
+
+    - name: Run tests
+      run: vstest.console ./UnitTestProject1/bin/Debug/Order_Processing_Assignment.dll
+
+    - name: Publish build artifacts
+      if: success()
+      run: |
+        mkdir $(Build.ArtifactStagingDirectory)
+        copy ./path/to/your/output/* $(Build.ArtifactStagingDirectory)
