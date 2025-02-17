@@ -10,20 +10,24 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest  # This is necessary for .NET Framework 4.8.1, as it runs only on Windows.
+    runs-on: windows-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up .NET Framework 4.8.1
-      uses: microsoft/setup-msbuild@v1
-      with:
-        vs-version: 'latest' # Automatically sets up Visual Studio with .NET Framework 4.8.1
-
     - name: Enable long path support
       run: |
         reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v LongPathsEnabled /t REG_DWORD /d 1 /f
+
+    - name: Enable Git Long Path Support
+      run: |
+        git config --global core.longpaths true
+
+    - name: Set up .NET Framework 4.8.1
+      uses: microsoft/setup-msbuild@v1
+      with:
+        vs-version: 'latest'
 
     - name: Restore NuGet packages
       run: |
@@ -41,5 +45,3 @@ jobs:
       run: |
         mkdir -p $(Build.ArtifactStagingDirectory)
         copy /y "path\to\your\build\output\*" $(Build.ArtifactStagingDirectory)
-        # Or use any other method to push the artifacts
-
