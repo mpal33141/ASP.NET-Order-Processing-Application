@@ -19,6 +19,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Move repo to shorter path
+      run: |
+        mkdir C:\shortrepo
+        move D:\a\_temp\* C:\shortrepo
+        cd C:\shortrepo
+
     - name: Install .NET Framework 4.8.1
       run: |
         choco install dotnet-4.8.1-sdk --version 4.8.1
