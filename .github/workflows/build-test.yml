@@ -13,19 +13,28 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      # Set Git to handle long paths
+      - name: Set Git to support long paths
+        run: git config --global core.longpaths true
+
+      # Checkout Code
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      # Setup .NET environment
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.x'  # Change this if needed
+          dotnet-version: '8.0.x'  # Adjust .NET version if needed
 
+      # Restore Dependencies
       - name: Restore Dependencies
         run: dotnet restore
 
+      # Build Project
       - name: Build Project
         run: dotnet build --no-restore
 
+      # Run Tests
       - name: Run Tests
         run: dotnet test --no-build --verbosity normal
