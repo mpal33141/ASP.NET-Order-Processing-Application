@@ -1,4 +1,4 @@
-name: Build and Test
+name: ASP.NET MVC CI
 
 on:
   push:
@@ -10,32 +10,36 @@ on:
 
 jobs:
   build:
-
-    runs-on: windows-latest
+    runs-on: windows-latest  # This is necessary for .NET Framework 4.8.1, as it runs only on Windows.
 
     steps:
-    - name: Checkout repository
+    - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set Git longpaths
-      run: git config --system core.longpaths true
-
-    - name: Enable Long Path Support
-      run: |
-        Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v2
+    - name: Set up .NET Framework 4.8.1
+      uses: microsoft/setup-msbuild@v1
       with:
-        dotnet-version: '4.8.x'
+        vs-version: 'latest' # Automatically sets up Visual Studio with .NET Framework 4.8.1
 
-    - name: Install NuGet
-      run: nuget restore
-
-    - name: Build project
-      run: msbuild /p:Configuration=Release
-
-    - name: Run tests
+    - name: Enable long path support
       run: |
-        $solution = (Get-ChildItem -Filter *.sln).FullName
-        vstest.console.exe $solution /logger:trx
+        reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v LongPathsEnabled /t REG_DWORD /d 1 /f
+
+    - name: Restore NuGet packages
+      run: |
+        nuget restore Order_Processing_Assignment.sln
+
+    - name: Build the solution
+      run: |
+        msbuild Order_Processing_Assignment.sln /p:Configuration=Release
+
+    - name: Run Tests (optional)
+      run: |
+        vstest.console Order_Processing_Assignment.dll --logger:trx
+
+    - name: Publish Artifacts (optional)
+      run: |
+        mkdir -p $(Build.ArtifactStagingDirectory)
+        copy /y "path\to\your\build\output\*" $(Build.ArtifactStagingDirectory)
+        # Or use any other method to push the artifacts
+
