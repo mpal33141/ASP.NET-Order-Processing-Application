@@ -21,16 +21,21 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Install Visual Studio Build Tools
+      # Install Visual Studio Build Tools and ASP.NET Web Development Workload
       - name: Install Visual Studio Build Tools
         run: |
-          choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.ManagedDesktop --add Microsoft.VisualStudio.Workload.WebDevelopment"
+          choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.ManagedDesktop --add Microsoft.VisualStudio.Workload.WebDevelopment --add Microsoft.VisualStudio.Component.Windows10SDK.18362"
 
-      # Setup .NET environment
-      - name: Setup .NET
+      # Setup .NET Framework 4.8.1 SDK
+      - name: Install .NET Framework 4.8.1 SDK
+        run: |
+          choco install netfx-4.8.1-sdk
+
+      # Setup .NET Core SDK
+      - name: Setup .NET SDK
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.x'  # Adjust .NET version if needed
+          dotnet-version: '8.0.x'  # .NET SDK for any .NET Core/.NET 5+ needs
 
       # Restore Dependencies
       - name: Restore Dependencies
