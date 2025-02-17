@@ -16,10 +16,8 @@ jobs:
         reg add "HKLM\SYSTEM\CurrentControlSet\Control\FileSystem" /v LongPathsEnabled /t REG_DWORD /d 1 /f
         echo "Long path support enabled"
 
-    - name: Checkout code to shorter path
+    - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        path: c:\repo
 
     - name: Install .NET Framework 4.8.1
       run: |
