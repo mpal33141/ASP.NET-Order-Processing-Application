@@ -1,35 +1,30 @@
-name: Build and Deploy ASP.NET MVC 4.8.1 Application
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
+name: Build Web App
+ 
+on: [push]
+ 
 jobs:
   build:
+ 
     runs-on: windows-latest
-    
+ 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Set up .NET Framework
-      uses: microsoft/setup-msbuild@v1
-      with:
-        vs-version: 'latest'
-
-    - name: Restore NuGet packages
+    - uses: actions/checkout@v1
+      name: Checkout Code
+     
+    - name: Setup MSBuild Path
+      uses: warrenbuckley/Setup-MSBuild@v1
+       
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.0.2
+     
+    - name: Restore NuGet Packages
       run: nuget restore Order_Processing_Assignment.sln
-
-    - name: Build the application
-      run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release
-
-    - name: Run tests (optional)
-      run: |
-        vstest.console.exe UnitTestProject1.dll
-
-    - name: Publish the application (optional)
-      run: msbuild YourProject.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile
+ 
+    - name: Build and Publish Web App
+      run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile
+ 
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: published_webapp
+        path: bin\Release\Publish
