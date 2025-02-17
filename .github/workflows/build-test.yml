@@ -13,13 +13,18 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      # Set Git to handle long paths
+      # Set Git to support long paths
       - name: Set Git to support long paths
         run: git config --global core.longpaths true
 
       # Checkout Code
       - name: Checkout Code
         uses: actions/checkout@v3
+
+      # Install Visual Studio Build Tools
+      - name: Install Visual Studio Build Tools
+        run: |
+          choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.ManagedDesktop --add Microsoft.VisualStudio.Workload.WebDevelopment"
 
       # Setup .NET environment
       - name: Setup .NET
