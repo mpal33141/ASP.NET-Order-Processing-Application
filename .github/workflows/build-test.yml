@@ -26,11 +26,11 @@ jobs:
         run: |
           choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.ManagedDesktop --add Microsoft.VisualStudio.Workload.WebDevelopment --add Microsoft.VisualStudio.Component.Windows10SDK.18362 --includeRecommended"
 
-      # Setup .NET SDK
+      # Setup .NET SDK (for compatibility, we keep the latest SDK but target 4.8.1)
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.x'  # Adjust .NET version if needed
+          dotnet-version: '8.0.x'
 
       # Restore Dependencies
       - name: Restore Dependencies
@@ -38,8 +38,8 @@ jobs:
 
       # Build Project
       - name: Build Project
-        run: dotnet build --no-restore
+        run: dotnet build --no-restore /p:TargetFramework=net48
 
       # Run Tests
       - name: Run Tests
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --no-build --verbosity normal /p:TargetFramework=net48
