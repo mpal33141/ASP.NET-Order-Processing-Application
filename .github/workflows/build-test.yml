@@ -1,35 +1,35 @@
-name: EZRep Build
+name: Build and Deploy ASP.NET MVC 4.8.1 Application
 
 on:
   push:
-    branches: master
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: windows-latest
-
-    steps:
-    - uses: actions/checkout@v2
     
-    - name: Setup MSBuild
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up .NET Framework
       uses: microsoft/setup-msbuild@v1
-
-    - uses: nuget/setup-nuget@v1
       with:
-        nuget-api-key: ${{ secrets.NuGetAPIKey }}
-        nuget-version: '5.x'
-      
-    - name: Navigate to Workspace
-      run: cd $GITHUB_WORKSPACE
+        vs-version: 'latest'
 
-    - name: Create Build Directory
-      run: mkdir _build
+    - name: Restore NuGet packages
+      run: nuget restore Order_Processing_Assignment.sln
 
+    - name: Build the application
+      run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release
 
-    - name: Restore Packages
-      run: nuget restore MazeBallWeb/MazeBall.sln
-
-    - name: Build Solution
+    - name: Run tests (optional)
       run: |
-        msbuild.exe MazeBallWeb/MazeBall.sln /nologo /nr:false /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:platform="Any CPU" /p:configuration="Release" /p:PublishUrl="../_build"
-        
+        vstest.console.exe UnitTestProject1.dll
+
+    - name: Publish the application (optional)
+      run: msbuild YourProject.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile
