@@ -1,54 +1,50 @@
-name: ASP.NET MVC (.NET Framework 4.8) to App Service
+name: Build and Test
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
-  workflow_dispatch:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: windows-latest
-    defaults:
-      run:
-        working-directory: aspnet-mvc-dotnetframework48
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.1
-      
-      - name: Setup NuGet
-        uses: nuget/setup-nuget@v1
-        
-      - name: Restore NuGet packages
-        run: nuget restore AspnetMvc48.sln
-      
-      - name: Build
-        run: msbuild AspnetMvc48.sln /p:Configuration=Release /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:publishUrl=${{ github.workspace }}\publish /p:PrecompileBeforePublish=true /p:EnableUpdateable=false
-     
-      - name: Zip
-        run: compress-archive ${{ github.workspace }}\publish\* ${{ github.workspace }}\app.zip
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: app
-          path: ${{ github.workspace }}\app.zip
-
-  deploy:
-    needs: build
-    runs-on: windows-latest
     steps:
-      - name: Download app
-        uses: actions/download-artifact@v3
+      # Set Git to support long paths
+      - name: Set Git to support long paths
+        run: git config --global core.longpaths true
+
+      # Checkout Code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Install Visual Studio Build Tools 2019 with Web Development
+      - name: Install Visual Studio Build Tools
+        run: |
+          choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.ManagedDesktop --add Microsoft.VisualStudio.Workload.WebDevelopment --add Microsoft.VisualStudio.Component.Windows10SDK.18362 --includeRecommended"
+
+      # Setup .NET SDK
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
         with:
-          name: app
-          
-      - name: Deploy to App Service
-        uses: azure/webapps-deploy@v2
-        with: 
-          app-name: "app-eru-netframework-mvc"
-          publish-profile: ${{ secrets.AZURE_APP_SERVICE_PUBLISH_PROFILE }}
-          package: ${{ github.workspace }}\app.zip
+          dotnet-version: '8.0.x'
+
+      # Restore Dependencies
+      - name: Restore Dependencies
+        run: nuget restore Order_Processing_Assignment.sln
+
+      # Build Project using MSBuild
+      - name: Build Project
+        run: |
+          "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin\MSBuild.exe" /p:Configuration=Release Order_Processing_Assignment.sln
+
+      # Run Tests using VSTest.console.exe
+      - name: Run Tests
+        run: |
+          $testAssemblies = Get-ChildItem -Recurse -Filter *Test*.dll -Path '.\bin\Release'
+          foreach ($testAssembly in $testAssemblies) {
+            "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\Common7\IDE\Extensions\TestPlatform\vstest.console.exe" $testAssembly.FullName
+          }
