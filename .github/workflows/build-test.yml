@@ -1,4 +1,4 @@
-name: Build and Test ASP.NET MVC 4.8.1 Project
+name: Build and Test ASP.NET MVC Project
 
 on:
   push:
@@ -8,19 +8,15 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-latest  # Ensure you're using a Windows runner
 
     steps:
-    - name: Enable long path support
-      run: git config --global core.longpaths true
-
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up .NET Framework
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 4.8.1
+    - name: Install .NET Framework 4.8.1
+      run: |
+        choco install dotnet-4.8.1-sdk --version 4.8.1
 
     - name: Restore dependencies
       run: nuget restore ./Order_Processing_Assignment.sln
