@@ -1,50 +1,35 @@
-name: Build and Test
+name: EZRep Build
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    branches: master
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-      # Set Git to support long paths
-      - name: Set Git to support long paths
-        run: git config --global core.longpaths true
+    - uses: actions/checkout@v2
+    
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1
 
-      # Checkout Code
-      - name: Checkout Code
-        uses: actions/checkout@v3
+    - uses: nuget/setup-nuget@v1
+      with:
+        nuget-api-key: ${{ secrets.NuGetAPIKey }}
+        nuget-version: '5.x'
+      
+    - name: Navigate to Workspace
+      run: cd $GITHUB_WORKSPACE
 
-      # Install Visual Studio Build Tools 2019 with Web Development
-      - name: Install Visual Studio Build Tools
-        run: |
-          choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.ManagedDesktop --add Microsoft.VisualStudio.Workload.WebDevelopment --add Microsoft.VisualStudio.Component.Windows10SDK.18362 --includeRecommended"
+    - name: Create Build Directory
+      run: mkdir _build
 
-      # Setup .NET SDK
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.0.x'
 
-      # Restore Dependencies
-      - name: Restore Dependencies
-        run: nuget restore Order_Processing_Assignment.sln
+    - name: Restore Packages
+      run: nuget restore MazeBallWeb/MazeBall.sln
 
-      # Build Project using MSBuild
-      - name: Build Project
-        run: |
-          "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin\MSBuild.exe" /p:Configuration=Release Order_Processing_Assignment.sln
-
-      # Run Tests using VSTest.console.exe
-      - name: Run Tests
-        run: |
-          $testAssemblies = Get-ChildItem -Recurse -Filter *Test*.dll -Path '.\bin\Release'
-          foreach ($testAssembly in $testAssemblies) {
-            "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\Common7\IDE\Extensions\TestPlatform\vstest.console.exe" $testAssembly.FullName
-          }
+    - name: Build Solution
+      run: |
+        msbuild.exe MazeBallWeb/MazeBall.sln /nologo /nr:false /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:platform="Any CPU" /p:configuration="Release" /p:PublishUrl="../_build"
+        
