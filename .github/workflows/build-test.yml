@@ -11,12 +11,11 @@ jobs:
     runs-on: windows-latest
 
     steps:
+    - name: Enable long path support
+      run: git config --global core.longpaths true
+
     - name: Checkout code
       uses: actions/checkout@v4
-
-    - name: Enable long path support
-      run: |
-        reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v LongPathsEnabled /t REG_DWORD /d 1 /f
 
     - name: Set up .NET Framework
       uses: actions/setup-dotnet@v4
