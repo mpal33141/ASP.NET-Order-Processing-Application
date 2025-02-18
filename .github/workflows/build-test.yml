@@ -21,22 +21,25 @@ jobs:
       - name: Setup NuGet
         uses: nuget/setup-nuget@v2
         with:
-          nuget-version: 'latest' # Or specify a version like '6.x' or '7.x'
+          nuget-version: 'latest'
 
       - name: Restore NuGet packages
-        run: nuget restore Order_Processing_Assignment.sln
+        run: nuget restore Order_Processing_Assignment/Order_Processing_Assignment.sln  # Path to your solution file
 
-      - name: Build
-        run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release
+      - name: Build Main Project
+        run: msbuild Order_Processing_Assignment/Order_Processing_Assignment.sln /p:Configuration=Release  # Path to your solution file
 
-      - name: Test # Only include this step if you have tests
-        run: dotnet test --no-build --verbosity normal # Adjust the command if needed
+      - name: Build Test Project  # Build the test project *before* running tests
+        run: msbuild UnitTestProject1/UnitTestProject1.csproj /p:Configuration=Release  # Path to your test project file
 
-      - name: Publish
-        run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile # Make sure FolderProfile exists and the path is correct
+      - name: Test  # Run the tests
+        run: vstest.console.exe "UnitTestProject1/bin/Release/UnitTestProject1.dll" /Platform:x86 /Framework:.NETFramework,Version=v4.8.1 # Update the path to the test DLL and .NET Framework version if needed
+
+      - name: Publish # Only include if you are publishing
+        run: msbuild Order_Processing_Assignment/Order_Processing_Assignment.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile # Correct path to publish profile
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: publish
-          path: ./publish # Correct path to published output.  "./publish" is relative to the repository root.
+          path: ./publish # Correct path
