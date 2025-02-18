@@ -8,34 +8,32 @@ on:
 
 jobs:
   build:
-
     runs-on: windows-latest
-
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v2
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
 
-    - name: Setup NuGet
-      uses: nuget/setup-nuget@v2
-      with:
-        nuget-version: '5.x'
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v2
+        with:
+          nuget-version: '5.x' # Or specify a more recent version if needed
 
-    - name: Restore NuGet packages
-      run: nuget restore Order_Processing_Assignment.sln
+      - name: Restore NuGet packages
+        run: nuget restore Order_Processing_Assignment.sln
 
-    - name: Build
-      run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release
+      - name: Build
+        run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release
 
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+      - name: Test # If you have tests
+        run: dotnet test --no-build --verbosity normal  # Adjust the test command if needed
 
-    - name: Publish
-      run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile
+      - name: Publish
+        run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile
 
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: publish
-        path: ./publish
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4 # Updated to v4
+        with:
+          name: publish
+          path: ./publish
