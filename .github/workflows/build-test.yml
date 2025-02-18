@@ -33,7 +33,7 @@ jobs:
         run: msbuild UnitTestProject1/UnitTestProject1.csproj /p:Configuration=Release
 
       - name: Test  # Run the tests using the Visual Studio Test task - CORRECTED ACTION NAME
-        uses: microsoft/vstest@v2  #<--- Corrected Action Name
+        uses: microsoft/vstest@v2  #<--- Corrected Action Name - Version Specified
         with:
           testAssemblyVer2: |
             **\UnitTestProject1\bin\Release\UnitTestProject1.dll  # Correct path to the DLL(s) - use **\* if you have multiple DLLs
