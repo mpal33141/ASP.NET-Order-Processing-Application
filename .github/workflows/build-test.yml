@@ -10,6 +10,9 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
+      - name: Configure Git for long paths
+        run: git config --global core.longpaths true
+
       - uses: actions/checkout@v3
 
       - name: Setup MSBuild
@@ -18,7 +21,7 @@ jobs:
       - name: Setup NuGet
         uses: nuget/setup-nuget@v2
         with:
-          nuget-version: '5.x' # Or specify a more recent version if needed
+          nuget-version: 'latest' # Or specify a version like '6.x' or '7.x'
 
       - name: Restore NuGet packages
         run: nuget restore Order_Processing_Assignment.sln
@@ -26,14 +29,14 @@ jobs:
       - name: Build
         run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release
 
-      - name: Test # If you have tests
-        run: dotnet test --no-build --verbosity normal  # Adjust the test command if needed
+      - name: Test # Only include this step if you have tests
+        run: dotnet test --no-build --verbosity normal # Adjust the command if needed
 
       - name: Publish
-        run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile
+        run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile # Make sure FolderProfile exists and the path is correct
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4 # Updated to v4
+        uses: actions/upload-artifact@v4
         with:
           name: publish
-          path: ./publish
+          path: ./publish # Correct path to published output.  "./publish" is relative to the repository root.
