@@ -23,7 +23,7 @@ jobs:
         nuget-version: '5.x'
 
     - name: Restore NuGet packages
-      run: nuget restore MyMvcApplication.sln
+      run: nuget restore Order_Processing_Assignment.sln
 
     - name: Build
       run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release
