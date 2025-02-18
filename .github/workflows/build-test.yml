@@ -1,53 +1,41 @@
-name: ASP.NET MVC CI
+name: Build and Test MyMvcApplication
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - main
+    branches: [ "main" ]
 
 jobs:
   build:
+
     runs-on: windows-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
-    - name: Enable long path support
-      run: |
-        reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v LongPathsEnabled /t REG_DWORD /d 1 /f
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
 
-    - name: Enable Git Long Path Support
-      run: |
-        git config --global core.longpaths true
-
-    - name: Set up .NET Framework 4.8.1
-      uses: microsoft/setup-msbuild@v1
+    - name: Setup NuGet
+      uses: nuget/setup-nuget@v2
       with:
-        vs-version: 'latest'
-
-    - name: Move the repo to a shorter path
-      run: |
-        mkdir C:\Build
-        move ${{ github.workspace }} C:\Build\Order_Processing_Assignment
-        cd C:\Build\Order_Processing_Assignment
+        nuget-version: '5.x'
 
     - name: Restore NuGet packages
-      run: |
-        nuget restore Order_Processing_Assignment.sln
+      run: nuget restore MyMvcApplication.sln
 
-    - name: Build the solution
-      run: |
-        msbuild Order_Processing_Assignment.sln /p:Configuration=Release
+    - name: Build
+      run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release
 
-    - name: Run Tests (optional)
-      run: |
-        vstest.console Order_Processing_Assignment.dll --logger:trx
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
 
-    - name: Publish Artifacts (optional)
-      run: |
-        mkdir -p $(Build.ArtifactStagingDirectory)
-        copy /y "path\to\your\build\output\*" $(Build.ArtifactStagingDirectory)
+    - name: Publish
+      run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: publish
+        path: ./publish
