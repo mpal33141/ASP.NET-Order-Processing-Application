@@ -30,7 +30,7 @@ jobs:
         run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release  # Path to your solution file
 
       - name: Build Test Project  # Build the test project *before* running tests
-        run: msbuild UnitTestProject1.csproj /p:Configuration=Release  # Path to your test project file
+        run: msbuild UnitTestProject1/UnitTestProject1.csproj /p:Configuration=Release  # Path to your test project file
 
       - name: Test  # Run the tests
         run: vstest.console.exe "UnitTestProject1/bin/Release/UnitTestProject1.dll" /Platform:x86 /Framework:.NETFramework,Version=v4.8.1 # Update the path to the test DLL and .NET Framework version if needed
