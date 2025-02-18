@@ -24,10 +24,10 @@ jobs:
           nuget-version: 'latest'
 
       - name: Restore NuGet packages
-        run: nuget restore Order_Processing_Assignment/Order_Processing_Assignment.sln
+        run: nuget restore Order_Processing_Assignment.sln
 
       - name: Build Main Project
-        run: msbuild Order_Processing_Assignment/Order_Processing_Assignment.sln /p:Configuration=Release
+        run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release
 
       - name: Build Test Project
         run: msbuild UnitTestProject1/UnitTestProject1.csproj /p:Configuration=Release
@@ -36,7 +36,7 @@ jobs:
         run: dotnet test UnitTestProject1/UnitTestProject1.csproj --configuration Release
 
       - name: Publish
-        run: msbuild Order_Processing_Assignment/Order_Processing_Assignment.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile
+        run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
