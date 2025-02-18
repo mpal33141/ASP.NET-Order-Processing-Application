@@ -24,22 +24,22 @@ jobs:
           nuget-version: 'latest'
 
       - name: Restore NuGet packages
-        run: nuget restore Order_Processing_Assignment.sln  # Path to your solution file
+        run: nuget restore Order_Processing_Assignment/Order_Processing_Assignment.sln
 
       - name: Build Main Project
-        run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release  # Path to your solution file
+        run: msbuild Order_Processing_Assignment/Order_Processing_Assignment.sln /p:Configuration=Release
 
-      - name: Build Test Project  # Build the test project *before* running tests
-        run: msbuild UnitTestProject1/UnitTestProject1.csproj /p:Configuration=Release  # Path to your test project file
+      - name: Build Test Project
+        run: msbuild UnitTestProject1/UnitTestProject1.csproj /p:Configuration=Release
 
-      - name: Test  # Run the tests
-        run: vstest.console.exe "UnitTestProject1/bin/Release/UnitTestProject1.dll" /Platform:x86 /Framework:.NETFramework,Version=v4.8.1 # Update the path to the test DLL and .NET Framework version if needed
+      - name: Test  # Run the tests using dotnet test
+        run: dotnet test UnitTestProject1/UnitTestProject1.csproj --configuration Release
 
-      - name: Publish # Only include if you are publishing
-        run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile # Correct path to publish profile
+      - name: Publish
+        run: msbuild Order_Processing_Assignment/Order_Processing_Assignment.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: publish
-          path: ./publish # Correct path
+          path: ./publish
