@@ -10,34 +10,44 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
+      # Configure Git for long paths to avoid issues with long file paths in Windows
       - name: Configure Git for long paths
         run: git config --global core.longpaths true
 
+      # Checkout the code
       - uses: actions/checkout@v3
 
+      # Setup MSBuild
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
+      # Setup NuGet
       - name: Setup NuGet
         uses: nuget/setup-nuget@v2
         with:
           nuget-version: 'latest'
 
+      # Restore NuGet packages
       - name: Restore NuGet packages
         run: nuget restore Order_Processing_Assignment.sln
 
+      # Build the main project
       - name: Build Main Project
         run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release
 
+      # Build the test project
       - name: Build Test Project
         run: msbuild UnitTestProject1/UnitTestProject1.csproj /p:Configuration=Release
 
-      - name: Test  # Run the tests using dotnet test
+      # Run tests using dotnet test
+      - name: Test  # Run the tests
         run: dotnet test UnitTestProject1/UnitTestProject1.csproj --configuration Release
 
+      # Publish the project to a folder (you may adjust the publish settings here)
       - name: Publish
-        run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile
+        run: msbuild Order_Processing_Assignment.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishDir=./publish
 
+      # Upload the published artifact for later use
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
